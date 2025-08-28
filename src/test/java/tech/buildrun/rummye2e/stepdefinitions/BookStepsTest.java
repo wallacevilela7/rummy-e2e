@@ -1,9 +1,11 @@
 package tech.buildrun.rummye2e.stepdefinitions;
 
+import io.cucumber.java.PendingException;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import io.restassured.response.Response;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import tech.buildrun.rummye2e.config.RestConfig;
 import tech.buildrun.rummye2e.config.ScenarioContext;
@@ -34,6 +36,7 @@ public class BookStepsTest {
                 .statusCode(204);
     }
 
+    @And("one user book the room for one hour from now")
     @When("i book the room for one hour from now")
     public void iBookTheRoomForOneHourFromNow() {
         //1 - Enviar requisição para o endpoint de booking,com o BookRequestDto
@@ -52,10 +55,17 @@ public class BookStepsTest {
         scenarioContext.put("response", response);
     }
 
-    @Then("the room should be sucessfuly booked")
-    public void theRoomShouldBeSucessfulyBooked() {
+    @Then("the room should be successfully booked")
+    public void theRoomShouldBeSuccessfullyBooked() {
         var response = scenarioContext.get("response", Response.class);
 
-        response.then().statusCode(200);
+        response.then().statusCode(HttpStatus.OK.value());
+    }
+
+    @Then("the booking should conflict")
+    public void theBookingShouldConflict() {
+        var response = scenarioContext.get("response", Response.class);
+
+        response.then().statusCode(HttpStatus.CONFLICT.value());
     }
 }
